@@ -5,6 +5,8 @@ The official desktop application for leafal.io, used to access the store, view p
 This application is early in development. Don't expect much, please report issues within our discord server (Morgan: owner and Kearfy: main dev of this repo): https://discord.gg/RucfrYaWnX
 
 # Running Development Builds
+The content below describes requirements, preparations and necessary NPM commands for running development builds of leafal.io Desktop.
+
 ## Requirements
 - NodeJS 14*
 - NPM (included with NodeJS)
