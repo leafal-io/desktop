@@ -1,0 +1,15 @@
+{
+    "defaultTitle": "Leafal Desktop",
+    "view": {
+        "profileSelection": {
+            "title": "Choose a profile",
+            "newProfile": "New profile",
+            "signin": "Sign in",
+            "continue": "Continue",
+            "manage": "Manage"
+        },
+        "myProfile": {
+            "title": "My profile"
+        }
+    }
+}

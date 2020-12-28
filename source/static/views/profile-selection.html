@@ -1,0 +1,180 @@
+<view-properties>
+    {
+        "title": "view.profileSelection.title",
+        "fillwindow": true
+    }
+</view-properties>
+
+<view-head>
+    <style>
+        .container {
+            width: 80vw;
+            height: 75vh;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            margin: auto;
+            z-index: 1000;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .container h1 {
+            text-align: center;
+        }
+
+        .container .profiles {
+            width: 80vw;
+            height: 40vh;
+            margin-top: 5vh;
+            overflow: hidden;
+            transform: scale(1);
+            transition: transform .2s ease;
+        }
+
+        .container .profiles.manage {
+            transform: scale(1.2);
+        }
+
+        .container .profiles .block {
+            width: 80vw;
+            height: 40vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container .profiles .profile {
+            width: 18vw;
+            height: 40vh;
+            margin: 0px 1vw;
+            background-color: #2a2a2a;
+        }
+
+        .container .profiles .profile .profile-image {
+            width: 18vw;
+            height: 18vw;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .container .profiles .profile .profile-image img {
+            max-width: 70%;
+            max-height: 70%;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            margin: auto;
+            border-radius: 100%;
+            transform: scale(1);
+            transition: transform .2s ease;
+        }
+
+        .container .profiles.manage .profile .profile-image img {
+            transform: scale(.8);
+        }
+
+        .container .profiles .profile h4 {
+            text-align: center;
+        }
+
+        .container .profiles:not(.manage) .profile button[button-manage] {
+            display: none;
+        }
+
+        .container .profiles.manage .profile button[button-action] {
+            display: none;
+        }
+
+        .container a.newProfile {
+            text-align: center;
+            padding: 12px 0px;
+            background-color: #3f3f3f;
+            width: 150px;
+            margin: 0px calc(50% - 75px);
+            text-decoration: none;
+        }
+
+        .switch-manage {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            z-index: 2000;
+        }
+
+        .switch-manage i {
+            line-height: 50px;
+        }
+    </style>
+</view-head>
+
+<view-body>
+    <script>
+        (async function() {
+            const profiles = await profile.list();
+            profiles.forEach((profile, i) => {
+                var card = document.createElement('div');
+                var block = getBlock(Math.ceil((i + 1) / 4));
+
+                var profileImage = document.createElement('div');
+                profileImage.classList.add('profile-image');
+                profileImage.innerHTML = `<img src="${profile.localAvatar}" alt="${profile.displayname}'s profile image">`;
+                card.appendChild(profileImage);
+
+                var displayName = document.createElement('h4');
+                displayName.innerText = profile.displayname;
+                card.appendChild(displayName);
+
+                var button = document.createElement('button');
+                button.setAttribute('button-action', '');
+                button.setAttribute('data-lang', profile.signedin ? 'view.profileSelection.continue' : 'view.profileSelection.signin');
+                card.appendChild(button);
+
+                var buttonManage = document.createElement('button');
+                buttonManage.setAttribute('button-manage', '');
+                buttonManage.setAttribute('data-lang', 'view.profileSelection.manage');
+                card.appendChild(buttonManage);
+
+                card.classList.add('profile');
+                block.appendChild(card);
+            });
+
+            lang.updateAll();
+
+            function getBlock(id) {
+                var block = document.querySelector('.block.block-' + id);
+                if (!block) {
+                    block = document.createElement('div');
+                    block.classList.add('block');
+                    block.classList.add('block-' + id);
+                    document.querySelector('.profiles').appendChild(block);
+                }
+                
+                return block;
+            }
+
+            document.querySelector('.switch-manage').addEventListener('click', e => document.querySelector('.profiles').classList.toggle('manage'));
+        })();
+    </script>
+</view-body>
+
+<view-content>
+    <div class="container">
+        <h1 data-lang="view.profileSelection.title"></h1>
+        <div class="profiles"></div>
+        <a href="#" class="newProfile" data-lang="view.profileSelection.newProfile"></a>
+    </div>
+    <div class="switch-manage">
+        <i class="fas fa-user-cog"></i>
+    </div>
+</view-content>

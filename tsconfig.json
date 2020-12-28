@@ -1,0 +1,13 @@
+{
+    "include": ["build/**/**/**/*"],
+    "exclude": ["node_modules", "**/*.spec.ts"],
+    "compilerOptions": {
+        "target": "es6",         
+        "module": "commonjs",    
+        "strict": true,          
+        "esModuleInterop": true,    
+        "rootDir": "./build",
+        "removeComments": true,
+        "moduleResolution": "node"
+    }
+}
