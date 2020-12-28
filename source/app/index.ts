@@ -6,8 +6,6 @@ const path = require("path");
 const Store = require("electron-store");
 const store = new Store();
 
-store.delete('userprofiles');
-
 //Prepare the environment
 require('dotenv').config();
 if (!process.env.PUBLIC_KEY) {
