@@ -14,7 +14,8 @@ This application is early in development. Don't expect much, please report issue
 
 # NPM commands
 - npm run start: Compiles the application in folder "build" and launches it.
-- npm run dev: Compiles the application in folder "build" and launches it, but in a dev environment.
+- npm run dev: NON WINDOWS: Compiles the application in folder "build" and launches it, but in a dev environment.
+- npm run devwindows: FOR WINDOWS: Compiles the application in folder "build" and launches it, but in a dev environment.
 - npm run cleanbuild: Deletes the "build" directory
 - npm run copysource: Copies all source files to the build directory
 - npm run preparebuild: Combines cleanbuild and copysource

@@ -19,6 +19,7 @@
   "scripts": {
     "start": "npm run build && electron .",
     "dev": "NODE_ENV=dev npm run start",
+    "devwindows": "SET NODE_ENV=dev npm run start",
     "cleanbuild": "rimraf build/",
     "copysource": "copyfiles -u 1 source/**/**/**/* source/**/**/* source/**/* build/",
     "preparebuild": "npm run cleanbuild && npm run copysource",
