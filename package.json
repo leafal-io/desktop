@@ -1,7 +1,7 @@
 {
   "name": "leafal-desktop",
   "version": "1.0.0",
-  "description": "Official Leafal.io desktop application. Built with electron and node",
+  "description": "Official leafal.io desktop application. Built with electron and node",
   "main": "build/app/index.js",
   "dependencies": {
     "axios": "^0.21.1",
