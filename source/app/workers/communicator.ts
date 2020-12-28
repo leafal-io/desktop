@@ -22,10 +22,10 @@ const components = [
         });
 
         app.handle('profile.delete', (e: any, username: string) => api.profile.delete(username));
-        app.handle('profile.authenticate', (e: any, login: {username: string, password: string}) => {
+        app.handle('profile.authenticate', async (e: any, login: {username: string, password: string}) => {
             var profile = api.profile.find(login.username);
-            if (!profile) profile = api.profile.create(login.username);
-            return profile.authenticate(login.password);
+            if (!profile) profile = await api.profile.create(login.username);
+            return await profile.authenticate(login.password);
         });
 
         app.handle('profile.signout', (e:any, username: string) => {
