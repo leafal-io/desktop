@@ -12,17 +12,17 @@ The content below describes requirements, preparations and necessary NPM command
 - NPM (included with NodeJS)
 
 ## Preparations
-- run npm install in the root directory
-- start the application with "npm run dev"
+- run `npm install` in the root directory
+- start the application with `npm run dev`
 
 ## NPM commands
-- npm run start: Compiles the application in folder "build" and launches it.
-- npm run dev: NON WINDOWS: Compiles the application in folder "build" and launches it, but in a dev environment.
-- npm run devwindows: FOR WINDOWS: Compiles the application in folder "build" and launches it, but in a dev environment.
-- npm run cleanbuild: Deletes the "build" directory
-- npm run copysource: Copies all source files to the build directory
-- npm run preparebuild: Combines cleanbuild and copysource
-- npm run build: runs preparebuild and compiles all the typescript code into native Javascript
-- npm run buildonly: Only compiles the typescript code into native Javascript. (Within the build directory)
-- npm run startonly: Starts the application without rebuilding or compiling the typescript code.
-- npm run startbasic: Compiles the typescript in the build directory and starts the application.
+- `npm run start`: Compiles the application in folder "build" and launches it.
+- `npm run dev`: NON WINDOWS: Compiles the application in folder "build" and launches it, but in a dev environment.
+- `npm run devwindows`: FOR WINDOWS: Compiles the application in folder "build" and launches it, but in a dev environment.
+- `npm run cleanbuild`: Deletes the "build" directory
+- `npm run copysource`: Copies all source files to the build directory
+- `npm run preparebuild`: Combines cleanbuild and copysource
+- `npm run build`: runs preparebuild and compiles all the typescript code into native Javascript
+- `npm run buildonly`: Only compiles the typescript code into native Javascript. (Within the build directory)
+- `npm run startonly`: Starts the application without rebuilding or compiling the typescript code.
+- `npm run startbasic`: Compiles the typescript in the build directory and starts the application.
