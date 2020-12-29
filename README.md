@@ -12,13 +12,13 @@ The content below describes requirements, preparations and necessary NPM command
 - NPM (included with NodeJS)
 
 ## Preparations
+- Create `.env` file with public key. (Use `.env-example` as an template)
 - run `npm install` in the root directory
 - start the application with `npm run dev`
 
 ## NPM commands
 - `npm run start`: Compiles the application in folder "build" and launches it.
-- `npm run dev`: NON WINDOWS: Compiles the application in folder "build" and launches it, but in a dev environment.
-- `npm run devwindows`: FOR WINDOWS: Compiles the application in folder "build" and launches it, but in a dev environment.
+- `npm run dev`: Compiles the application in folder "build" and launches it, but in a dev environment.
 - `npm run cleanbuild`: Deletes the "build" directory
 - `npm run copysource`: Copies all source files to the build directory
 - `npm run preparebuild`: Combines cleanbuild and copysource
