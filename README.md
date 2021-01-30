@@ -383,7 +383,7 @@ We will assume the following language file:
         lang.load(element, 'language-string.two');
 
         //Will result in
-        <el data-lang="language-string.one">Goodbye!</el>
+        <el data-lang="language-string.two">Goodbye!</el>
     ```
 
 - `lang.updateAll()`
