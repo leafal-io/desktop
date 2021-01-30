@@ -33,7 +33,7 @@
             margin-top: 5vh;
             overflow: hidden;
             transform: scale(1);
-            transition: transform .2s ease;
+            transition: transform .3s ease;
         }
 
         .container .profiles.manage {
@@ -72,11 +72,11 @@
             margin: auto;
             border-radius: 100%;
             transform: scale(1);
-            transition: transform .2s ease;
+            transition: transform .3s ease;
         }
 
         .container .profiles.manage .profile .profile-image img {
-            transform: scale(.8);
+            transform: scale(.7);
         }
 
         .container .profiles .profile h4 {
@@ -122,28 +122,53 @@
     <script>
         (async function() {
             const profiles = await profile.list();
-            profiles.forEach((profile, i) => {
+            profiles.forEach((userprofile, i) => {
                 var card = document.createElement('div');
                 var block = getBlock(Math.ceil((i + 1) / 4));
 
                 var profileImage = document.createElement('div');
                 profileImage.classList.add('profile-image');
-                profileImage.innerHTML = `<img src="${profile.localAvatar}" alt="${profile.displayname}'s profile image">`;
+                profileImage.innerHTML = `<img src="${userprofile.localAvatar}" alt="${userprofile.displayname}'s profile image">`;
                 card.appendChild(profileImage);
 
                 var displayName = document.createElement('h4');
-                displayName.innerText = profile.displayname;
+                displayName.innerText = userprofile.displayname;
                 card.appendChild(displayName);
 
                 var button = document.createElement('button');
                 button.setAttribute('button-action', '');
-                button.setAttribute('data-lang', profile.signedin ? 'view.profileSelection.continue' : 'view.profileSelection.signin');
+                button.setAttribute('data-lang', userprofile.signedin ? 'view.profileSelection.continue' : 'view.profileSelection.signin');
+                button.addEventListener('click', async e => {
+                    if (userprofile.signedin) {
+                        if (await profile.load(userprofile.username)) {
+                            view.load('my-profile');
+                        } else {
+                            alert('An unexpected error occured: Your profile is not signed in, please try restarting or reinstalling the application.');
+                        }
+                    } else {
+                        localStorage.setItem('signin-target-profile', userprofile.username);
+                        view.load('signin');
+                    }
+                });
                 card.appendChild(button);
 
-                var buttonManage = document.createElement('button');
-                buttonManage.setAttribute('button-manage', '');
-                buttonManage.setAttribute('data-lang', 'view.profileSelection.manage');
-                card.appendChild(buttonManage);
+                var buttonDelete = document.createElement('button');
+                buttonDelete.setAttribute('button-manage', '');
+                buttonDelete.setAttribute('data-lang', 'view.profileSelection.delete');
+                buttonDelete.addEventListener('click', async e => {
+                    await profile.delete(userprofile.username);
+                    view.load('profile-selection');
+                });
+                card.appendChild(buttonDelete);
+
+                var buttonSignout = document.createElement('button');
+                buttonSignout.setAttribute('button-manage', '');
+                buttonSignout.setAttribute('data-lang', 'view.profileSelection.signout');
+                buttonSignout.addEventListener('click', async e => {
+                    await profile.signout(userprofile.username);
+                    view.load('profile-selection');
+                });
+                card.appendChild(buttonSignout);
 
                 card.classList.add('profile');
                 block.appendChild(card);
@@ -162,6 +187,11 @@
                 
                 return block;
             }
+
+            document.querySelector('.newProfile').addEventListener('click', e => {
+                localStorage.setItem('signin-referrer', 'profile-selection');
+                view.load('signin');
+            })
 
             document.querySelector('.switch-manage').addEventListener('click', e => document.querySelector('.profiles').classList.toggle('manage'));
         })();

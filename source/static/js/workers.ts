@@ -9,8 +9,17 @@ const app = new class App {
         ipcRenderer.on(type, callback);
     }
     
-    invoke(type: string, payload?: any) {
-        return ipcRenderer.invoke(type, payload);
+    invoke(type: string, payload?: any, callback?: any) {
+        if (typeof payload == 'function') {
+            callback = payload;
+            payload = undefined;
+        }
+
+        if (callback) {
+            return ipcRenderer.invoke(type, payload).then(callback);
+        } else {
+            return ipcRenderer.invoke(type, payload);
+        }
     }
 }
 
@@ -19,8 +28,8 @@ const store = new class Store {
         return app.invoke('store.get', item);
     }
 
-    set(input1: string | number | object, value?: any) {
-        let data: {} = (!value ? input1 : {
+    set(input1: string | number | {item: string | number, value: any}, value?: any) {
+        let data: {} = (typeof input1 == 'object' ? input1 : {
             item: input1,
             value: value
         });
@@ -65,14 +74,63 @@ const loader = new class Loader {
     }
 }
 
+const globalEventHandler = new class GlobalEventHandler {
+    private registrations: any = {};
+
+    constructor() {
+        Object.keys(window).forEach((key: any) => {
+            if (/^on/.test(key)) {
+                window.addEventListener(key.slice(2), (event: any) => {
+                    if (this.registrations[event.type]) this.registrations[event.type].forEach((handler: any) => handler(event));
+                });
+            }
+        });
+
+        this.register('click', (e: any) => {
+            var el: any = this.findParentWithAttribute(e.target, 'system-browser');
+            if (el) shell.openExternal(el.getAttribute('system-browser'));
+        });
+    }
+
+    register(eventType: string, handler: any) {
+        if (!this.registrations[eventType]) this.registrations[eventType] = [];
+        this.registrations[eventType].push(handler);
+    }
+
+    findParent(el: any, cb: any) {
+        while(el) {
+            if (cb(el)) {
+                break;
+            } else {
+                el = el.parentElement;
+            }
+        }
+
+        return el;
+    }
+
+    findParentWithAttribute(el: any, attr: string) {
+        return this.findParent(el, (potEl: any) => potEl.getAttribute(attr))
+    }
+
+    findParentWithClass(el: any, className: string) {
+        return this.findParent(el, (potEl: any) => potEl.classList.contains(className));
+    }
+}
+
 const lang = new class Lang {
     private current: string = 'en';
     private data: {} = {};
 
     constructor() {
-        store.get('language').then(storeValue => {
+        store.get('language').then((storeValue: any) => {
             this.load(storeValue ? storeValue : this.current);
         });
+
+        globalEventHandler.register('click', (e: any) => {
+            var el: any = globalEventHandler.findParentWithAttribute(e.target, 'load-lang')
+            if (el) this.load(el.getAttribute('load-lang'));
+        })
     }
 
     load(lang: string) {
@@ -93,7 +151,6 @@ const lang = new class Lang {
 
     update(el: any, selector?: string) {
         try {
-            console.log(el);
             var targetAttribute = null;
             if (!selector) selector = el.getAttribute('data-lang');
             if (!selector) selector = '';
@@ -127,6 +184,13 @@ const lang = new class Lang {
 }
 
 const view = new class View {
+    constructor() {
+        globalEventHandler.register('click', (e: any) => {
+            var el: any = globalEventHandler.findParent(e.target, (potEl: any) => potEl.getAttribute('load-view'))
+            if (el) this.load(el.getAttribute('load-view'));
+        })
+    }
+    
     load(view: string) {
         loader.show();
 
@@ -139,12 +203,11 @@ const view = new class View {
         }, 400);
 
         //Make sure that the loader is shown BEFORE the view is obtained and LOADED
-        setTimeout(() => fetch(`views/${view}.html`).then(res => res.text()).then(res => {
+        setTimeout(() => fetch(`views/${view}.html`).then(res => res.text()).then(async res => {
             //Parse new view and retrieve configurations.
             const parsed: any = document.createElement('parsed'); parsed.innerHTML = res;
             const viewProperties: any = Object.assign({
                 title: "defaultTitle",
-                titleSuffix: true,
                 fillwindow: false
             }, (props => props ? JSON.parse(props.innerText) : {})(parsed.querySelector('view-properties')));
             
@@ -194,6 +257,7 @@ const view = new class View {
 
             document.body.setAttribute('fillwindow', viewProperties.fillwindow.toString());
             lang.updateAll();
+            await profile.fillPage();
 
             if (!forceLoader) loader.hide();
             forceLoader = false;
@@ -207,6 +271,11 @@ const profile = new class Profile {
     async initialize() {
         var profile = await store.get('currentProfile');
         if (profile) await this.load(profile);
+
+        globalEventHandler.register('click', (e: any) => {
+            var el: any = globalEventHandler.findParentWithAttribute(e.target, 'update-profile-details')
+            if (el) this.fillPage();
+        })
     }
 
     current() {
@@ -253,11 +322,20 @@ const profile = new class Profile {
         });
     }
 
+    async byIdentifier(identifier: string, password: string) {
+        var res = await app.invoke('profile.byIdentifier', {
+            identifier: identifier,
+            password: password
+        });
+
+        return res;
+    }
+
     async signout(username: string) {
         if (this.currentProfile == username) {
             this.currentProfile = null;
             await store.set('currentProfile', null);
-        }
+        }        
 
         return await app.invoke('profile.signout', username);
     }
@@ -267,8 +345,57 @@ const profile = new class Profile {
         if (profile && profile.signedin) {
             this.currentProfile = username;
             await store.set('currentProfile', username);
+            return true;
         } else {
             return false;
         }
+    }
+
+    async fillPage() {
+        const userprofile = await this.info() || {
+            id: 0,
+            username: 'Not signedin',
+            token: null,
+            signedin: false,
+            updated: 0,
+            displayname: 'Not signedin',
+            url: '#',
+            avatar: 'https://www.leafal.io/assets/uploads/default.png',
+            localAvatar: 'img/profile/default.png',
+            coin: {
+                color: '#FF0000',
+                title: 'Not signedin',
+                desktop: '#FF0000'
+            }
+        }
+
+        document.querySelectorAll('[data-profile]').forEach((el: any) => {
+            try {
+                var targetAttribute = null;
+                var selector = el.getAttribute('data-profile');
+
+                if (!selector) selector = '';
+                if (selector.includes(':')) {
+                    targetAttribute = selector.split(':')[0];
+                    selector = selector.split(':')[1];
+                }
+
+                var result: any = {...userprofile};
+                selector.split('.').forEach((segment: any) => {
+                    if (typeof result != 'object') return result = null;
+                    result = result[segment];
+                });
+            
+                if (!result) result = 'Unknown path';
+                if (!targetAttribute) {
+                    el.innerText = result;
+                } else {
+                    el.setAttribute(targetAttribute, result);
+                }
+            } catch(e) {
+                console.log(e);
+                console.error('Error while updating content of element: not an element. Ignoring it.');
+            }
+        })
     }
 }

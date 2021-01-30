@@ -25,11 +25,25 @@ const components = [
         app.handle('profile.authenticate', async (e: any, login: {username: string, password: string}) => {
             var profile = api.profile.find(login.username);
             if (!profile) profile = await api.profile.create(login.username);
-            return await profile.authenticate(login.password);
+
+            var auth = await profile.authenticate(login.password);
+            if (auth.success) {
+                return {
+                    success: true,
+                    profile: profile.get()
+                };
+            } else {
+                return auth;
+            }
+        });
+
+        app.handle('profile.byIdentifier', async (e: any, login: {identifier: string, password: string}) => {
+            return await api.profile.byIdentifier(login.identifier, login.password);
         });
 
         app.handle('profile.signout', (e:any, username: string) => {
             var profile = api.profile.find(username);
+            
             if (!profile) return false;
             return profile.signout();
         });

@@ -6,7 +6,15 @@
             "newProfile": "Nieuw profiel",
             "signin": "Inloggen",
             "continue": "Doorgaan",
-            "manage": "Beheren"
+            "delete": "Verwijderen",
+            "signout": "Uitloggen"
+        },
+        "signin": {
+            "title": "Inloggen",
+            "identifier": "Gebruikersnaam of E-mailadres",
+            "password": "Wachtwoord",
+            "back": "Terug",
+            "continue": "Doorgaan"
         },
         "myProfile": {
             "title": "Mijn profiel"

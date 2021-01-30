@@ -5,7 +5,7 @@
 
     if (profiles.length < 1) {
         store.del('currentProfile');
-        view.load('profile-selection');
+        view.load('signin');
         return;
     }
 

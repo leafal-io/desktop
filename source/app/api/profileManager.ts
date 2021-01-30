@@ -196,6 +196,7 @@ class Profile {
     
                 //Update all information.
                 this.profile.updated = new Date().getTime();
+                this.profile.username = res.data.username;
                 this.profile.displayname = res.data.name;
                 this.profile.url = res.data.url;
                 this.profile.avatar = res.data.avatar;
@@ -259,6 +260,64 @@ class ProfileManager {
         }
         
         return true;
+    }
+
+    //Create new user by E-mail address
+    async byIdentifier(identifier: string, password: string) {
+        var auth: any = await LeafalAPI.post('desktop/token/index.php', qs.stringify({
+            username: identifier,
+            password: password
+        }));
+
+        auth = auth.data;
+        if (auth.success === false) {
+            return {
+                ...auth,
+                success: false
+            };
+        } else {                                                                        //If authentication is successful, obtain profile information and authentication token.
+            var userinfo: any = await LeafalAPI.post('users/me/index.php', {}, {        //Obtain information about the profile linked to provided token. (if valid)
+                headers: {
+                    "Authorization": `Bearer ${auth.token}`
+                }
+            })
+
+            userinfo = userinfo.data;
+            if (userinfo.error || userinfo.success === false) {     //Request was unsuccessful, return an error
+                return {
+                    ...userinfo,
+                    success: false
+                }
+            } else {
+                var existingProfile = this.find(userinfo.username);
+                if (existingProfile && existingProfile.get('id') == parseInt(userinfo.id)) {
+                    existingProfile.setToken(auth.token);
+                    return {
+                        success: true,
+                        profile: existingProfile.get()
+                    };
+                } else {
+                    //Usernames have been changed. Remove the old profile + data and create a new one.
+                    if (existingProfile) this.delete(userinfo.username);
+
+                    return {
+                        success: true,
+                        profile: new Profile({                            //Partially prefill information.
+                            id: parseInt(userinfo.id),
+                            username: userinfo.username,
+                            token: auth.token,
+                            signedin: true,
+                            updated: 0,
+                            displayname: userinfo.name,
+                            url: userinfo.url,
+                            avatar: '',
+                            localAvatar: userinfo.avatar,
+                            coin: userinfo.coin
+                        }).get()
+                    }
+                }
+            }
+        } 
     }
 
     //Create new user.

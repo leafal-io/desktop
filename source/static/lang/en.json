@@ -4,9 +4,17 @@
         "profileSelection": {
             "title": "Choose a profile",
             "newProfile": "New profile",
-            "signin": "Sign in",
+            "signin": "Signin",
             "continue": "Continue",
-            "manage": "Manage"
+            "delete": "Delete",
+            "signout": "Signout"
+        },
+        "signin": {
+            "title": "Signin to your account",
+            "identifier": "Username or E-mailaddress",
+            "password": "Password",
+            "back": "Back",
+            "continue": "Continue"
         },
         "myProfile": {
             "title": "My profile"
