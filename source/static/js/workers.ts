@@ -299,11 +299,7 @@ const profile = new class Profile {
     }
 
     async delete(username: string) {
-        if (this.currentProfile == username) {
-            this.currentProfile = null;
-            await store.set('currentProfile', null);
-        }
-        
+        if (this.currentProfile == username) await this.unload();        
         return await app.invoke('profile.delete', username);
     }
 
@@ -332,11 +328,7 @@ const profile = new class Profile {
     }
 
     async signout(username: string) {
-        if (this.currentProfile == username) {
-            this.currentProfile = null;
-            await store.set('currentProfile', null);
-        }        
-
+        if (this.currentProfile == username) await this.unload();  
         return await app.invoke('profile.signout', username);
     }
 
@@ -345,10 +337,18 @@ const profile = new class Profile {
         if (profile && profile.signedin) {
             this.currentProfile = username;
             await store.set('currentProfile', username);
+            document.body.setAttribute('profile-loaded', username);
             return true;
         } else {
             return false;
         }
+    }
+
+    async unload() {
+        this.currentProfile = null;
+        await store.set('currentProfile', null);
+        document.body.removeAttribute('profile-loaded');
+        return true;
     }
 
     async fillPage() {

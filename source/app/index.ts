@@ -30,8 +30,10 @@ class App {
     constructor() {
         this.root = path.dirname(__dirname);    //Get the upper directory of the current file.
         this.window = new BrowserWindow({
-            width: 800,
-            height: 600,
+            width: 850,
+            height: 650,
+            minWidth: 500,
+            minHeight: 650,
             backgroundColor: '#363636',
             webPreferences: {
                 nodeIntegration: true           //This allows the inclustion of ipcRenderer in the client window.

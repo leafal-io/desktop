@@ -50,6 +50,14 @@
         background-color: #363636;
     }
 
+    body:not([profile-loaded]) [profile-loaded] {
+        display: none !important;
+    }
+
+    body[profile-loaded] [profile-unloaded] {
+        display: none !important;
+    }
+
 /* PRELOADER */
     .loader {
         position: fixed;
@@ -105,6 +113,7 @@
         right: 0;
         height: 100%;
         box-shadow: 0 0 5px #111;
+        pointer-events: none;
     }
 
     body[fillwindow=true] .navbar {
@@ -117,6 +126,14 @@
         padding: 0px 2vw;
         margin: 0 auto;
         font-size: 14px;
+
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .navbar .inner > div {
+        display: flex;
+        justify-content: space-between;
     }
 
     .navbar .logo {
@@ -127,4 +144,42 @@
         height: 48px;
         width: 48px;
         margin: 6px 20px 6px 0px;
+    }
+
+    .navbar .profile-controls {
+        margin: 15px 10px;
+        height: 30px;
+        border-radius: 15px;
+        background: #262626;
+        transition: max-width .3s ease;
+        overflow: hidden;
+        display: flex;
+    }
+
+    .navbar .profile-controls i {
+        width: 33px;
+        height: 30px;
+        line-height: 29px;
+        text-align: center;
+
+        font-size: 18px;
+        margin-right: 5px;
+        color: #fff;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .navbar .profile-controls i:last-child {
+        margin-right: 3px;
+    }
+
+    .navbar .profile-image {
+        width: 60px;
+        height: 60px;
+    }
+
+    .navbar .profile-image img {
+        width: 40px;
+        height: 40px;
+        padding: 9px;
     }

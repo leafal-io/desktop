@@ -1,0 +1,297 @@
+.container {
+    width: 100%;
+    height: 60vh;
+    min-height: 450px;
+    max-height: 800px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    z-index: 1000;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.container h1 {
+    text-align: center;
+}
+
+.container .profiles {
+    width: 200px;
+    height: 250px;
+    margin: 0px calc(50% - 100px);
+    margin-top: 25px !important;
+    transform: scale(1);
+    transition: transform .3s ease, width .2s ease;
+}
+
+.container .profiles .inner {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+}
+
+.container .profiles .inner .scrolling {
+    height: 250px;
+    display: flex;
+    position: relative;
+    transition: left .2s ease;
+    left: 0px;
+}
+
+.container .profiles .scrollers {
+    width: calc(100% + 150px);
+    height: 30px;
+    position: absolute;
+    top: 0;
+    left: -75px;
+    bottom: 0;
+    margin: auto 0px;
+
+    display: flex;
+    justify-content: space-between;
+}
+
+.container .profiles .scrollers > div {
+    width: 30px;
+    height: 30px;
+    border-top: 2px solid white;
+    border-left: 2px solid white;
+    transform: rotate(-45deg);
+    cursor: pointer;
+    transition: opacity .2s ease;
+    opacity: 1;
+}
+
+.container .profiles .scrollers > div.finished {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .1s ease;
+}
+
+.container .profiles .scrollers > div.right {
+    transform: rotate(135deg);
+}
+
+@media only screen and (min-width: 600px) {
+    .container .profiles {
+        width: 400px;
+        margin: 0px calc(50% - 200px);
+    }
+
+    .container .profiles:not([profile-indexes*="2"]) .inner .scrolling {
+        justify-content: center;
+    }
+
+    .container .profiles:not([profile-indexes*="2"]) .scrollers > div {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .1s ease;
+    }
+}
+
+@media only screen and (min-width: 800px) {
+    .container .profiles {
+        width: 600px;
+        margin: 0px calc(50% - 300px);
+    }
+
+    .container .profiles:not([profile-indexes*="3"]) .inner .scrolling {
+        justify-content: center;
+    }
+
+    .container .profiles:not([profile-indexes*="3"]) .scrollers > div {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .1s ease;
+    }
+}
+
+@media only screen and (min-width: 1000px) {
+    .container .profiles {
+        width: 800px;
+        margin: 0px calc(50% - 400px);
+    }
+
+    .container .profiles:not([profile-indexes*="4"]) .inner .scrolling {
+        justify-content: center;
+    }
+
+    .container .profiles:not([profile-indexes*="4"]) .scrollers > div {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .1s ease;
+    }
+}
+
+@media only screen and (min-width: 1200px) {
+    .container .profiles {
+        width: 1000px;
+        margin: 0px calc(50% - 500px);
+    }
+
+    .container .profiles:not([profile-indexes*="5"]) .inner .scrolling {
+        justify-content: center;
+    }
+
+    .container .profiles:not([profile-indexes*="5"]) .scrollers > div {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .1s ease;
+    }
+}
+
+.container .profiles.manage {
+    transform: scale(1.2);
+}
+
+.container .profiles .profile {
+    width: 150px;
+    height: 250px;
+    margin: 0px 25px;
+    background-color: #2a2a2a;
+    position: relative;
+}
+
+.container .profiles .profile .profile-image {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.container .profiles .profile .profile-image img {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    border-radius: 100%;
+    transform: scale(1);
+    transition: transform .3s ease;
+}
+
+.container .profiles.manage .profile .profile-image img {
+    transform: scale(.7);
+}
+
+.container .profiles .profile h4 {
+    text-align: center;
+}
+
+.container .profiles .profile button {
+    width: 130px;
+    height: 40px;
+    line-height: 40px;
+
+    background-color: #555;
+    transition: background-color .2 ease;
+    
+    margin: 10px;
+    text-decoration: none;
+    text-align: center;
+
+    border: none;
+    outline: none;
+
+    position: absolute;
+    bottom: 0;
+}
+
+.container .profiles .profile button:hover {
+    background-color: #78B354;
+}
+
+.container .profiles .profile button:active,
+.container .profiles .profile button:focus {
+    background-color: #458021;
+}
+
+.container .profiles:not(.manage) .profile button[button-manage] {
+    display: none;
+}
+
+.container .profiles.manage .profile button[button-action] {
+    display: none;
+}
+
+.container button.newProfile {
+    width: 130px;
+    height: 40px;
+    line-height: 40px;
+
+    background-color: #555;
+    transition: background-color .2 ease;
+    
+    margin: 0px calc(50% - 65px);
+    text-decoration: none;
+    text-align: center;
+
+    border: none;
+    outline: none;
+}
+
+.container button.newProfile:hover {
+    background-color: #78B354;
+}
+
+.container button.newProfile:active,
+.container button.newProfile:focus {
+    background-color: #458021;
+}
+
+.switch-manage {
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 2000;
+}
+
+.switch-manage i {
+    line-height: 50px;
+}
+
+form .buttons {
+    width: 100%;
+    height: 40px;
+    padding-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+form .buttons button {
+    width: 47.5%;
+    height: 40px;
+    line-height: 40px;
+
+    background-color: #555;
+    transition: background-color .2 ease;
+
+    border: none;
+    outline: none;
+}
+
+form .buttons button:nth-child(2) {
+    margin-left: 5%;
+}
+
+form .buttons button:hover {
+    background-color: #78B354;
+}
+
+form .buttons button:active,
+form .buttons button:focus {
+    background-color: #458021;
+}

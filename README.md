@@ -1,9 +1,35 @@
-# leafal.io Desktop
+# [leafal.io](https://www.leafal.io) Desktop
 The official desktop application for leafal.io, used to access the store, view profiles, download and play games.
 
 **WARNING:**
 This application is early in development. Don't expect much, please report issues within our discord server (Morgan: owner and Kearfy: main dev of this repo): https://discord.gg/RucfrYaWnX
 
+# Table of contents
+- [Running Development Builds](#running-development-builds)
+    - [Requirements](#requirements)
+    - [Preparations](#preparations)
+    - [NPM commands](#npm-commands)
+- [HTML Attributes](#html-attributes)
+    - [View attributes](#view-attributes)
+    - [Lang attributes](#lang-attributes)
+    - [Profile attributes](#profile-attributes)
+    - [Other attributes](#other-attributes)
+- [Views](#views)
+    - [Root elements](#root-elements)
+    - [view-properties](#view-properties)
+- [Client-side workers](#client-side-workers)
+    - [app-worker](#app-worker)
+    - [store-worker](#store-worker)
+    - [loader-worker](#loader-worker)
+    - [globalEventHandler-worker](#globaleventhandler-worker)
+    - [lang-worker](#lang-worker)
+    - [view-worker](#view-worker)
+    - [profile-worker](#profile-worker)
+- [Communication channels](#communication-channels)
+    - [Profile Manager](#profilemanager)
+    - [Local Data Store](#local-data-store)
+
+[Back to the top](#leafalio-desktop)
 
 # Running Development Builds
 The content below describes requirements, preparations and necessary NPM commands for running development builds of leafal.io Desktop.
@@ -28,12 +54,21 @@ The content below describes requirements, preparations and necessary NPM command
 - `npm run startonly`: Starts the application without rebuilding or compiling the typescript code.
 - `npm run startbasic`: Compiles the typescript in the build directory and starts the application.
 
-## HTML Selectors
+[Back to the top](#leafalio-desktop)
+
+# HTML Attributes
+
+The application often uses HTML attributes to handle data and listen for user input. They are described here.
+
+## View attributes
 - **`load-view`**: Loads a view from the view folder when clicking on element, example: 
     ```html
         <el load-view="choose-profile">Choose profile</el>
     ```
 
+[Back to the top](#leafalio-desktop)
+
+## Lang attributes
 - **`load-lang`**: Loads a language file and updates page when clicking on element, example: 
     ```html
         <el load-lang="en">View app in English</el>
@@ -83,6 +118,9 @@ The content below describes requirements, preparations and necessary NPM command
         <input data-lang="placeholder:form.identifier" placeholder="Username of E-mail address">
     ```
 
+[Back to the top](#leafalio-desktop)
+
+## Profile attributes
 - **`update-profile-details`**: Forcibly updates all profile details on the page when clicked on element, example: 
 
     *Normally this automatically happens when a new view is loaded.*
@@ -141,12 +179,28 @@ The content below describes requirements, preparations and necessary NPM command
         <img data-profile="src:localAvatar" src="img/profile/1.png">
     ```
 
+- **`profile-loaded`**: Elements with this attribute will be hidden if no profile is loaded, example: 
+
+    ```html
+        <el profile-loaded>Your profile is loaded!</el>
+    ```
+
+- **`profile-unloaded`**: Elements with this attribute will be hidden if a profile is loaded, example: 
+
+    ```html
+        <el profile-unloaded>No profile is currently loaded.</el>
+    ```
+
+[Back to the top](#leafalio-desktop)
+
+## Other attributes
 - **`system-browser`**: Open a link in the browser once clicked on, example: 
 
     ```html
         <el system-browser="https://leafal.io">View the leafal.io store online!</el>
     ```
 
+[Back to the top](#leafalio-desktop)
 
 # Views
 We structure views in a specific way for them able to properly be processed by the router.
@@ -158,12 +212,14 @@ Each view can consist of the following root-elements:
 - `<view-body>`: Contains elements for the current view only that will be inserted at the end of the *body* element.
 - `<view-content>`: **REQUIRED**, contains the actual content for the view.
 
+[Back to the top](#leafalio-desktop)
+
 ## view-properties
 If present, inside the `<view-properties>` element a `{ JSON-object }` is expected. The following keys can be defined:
 - `"title"`: Defaults to: `"defaultTitle"`. Expects a path to a language string. Will update the `data-lang` property of the `html > head > title` element.
 - `"fillWindow"`: Defaults to `false`. In case a positive property such as `true` is present, the top-navigation bar and bottom status-bar will be hidden.
 
-## Example
+### Example using view-properties
 
 ```html
     <view-properties>
@@ -193,6 +249,8 @@ If present, inside the `<view-properties>` element a `{ JSON-object }` is expect
         <h1 data-lang="view.name.title"></h1>
     </view-content>
 ```
+
+[Back to the top](#leafalio-desktop)
 
 # Client-side workers
 
@@ -241,6 +299,8 @@ Communicate with the server-side of the application. For available communication
         });
     ```
 
+[Back to the top](#leafalio-desktop)
+
 ## **`store`**-worker
 
 - `store.set(input1: string | number | {item: string | number, value: any}, value?: any)`
@@ -268,6 +328,8 @@ Communicate with the server-side of the application. For available communication
         store.del('property');
     ```
 
+[Back to the top](#leafalio-desktop)
+
 ## **`loader`**-worker
 
 - `loader.show()`
@@ -281,6 +343,8 @@ Communicate with the server-side of the application. For available communication
 - `loader.toggle()`
 
     Toggle the page loader.
+
+[Back to the top](#leafalio-desktop)
 
 ## **`globalEventHandler`**-worker
 
@@ -340,6 +404,8 @@ If a user clicks on element with attribute "say-hi", or any of it's children, th
         <p>But I will not :(</p>
     <div>
 ```
+
+[Back to the top](#leafalio-desktop)
 
 ## **`lang`**-worker
 
@@ -408,6 +474,8 @@ We will assume the following language file:
         lang.get('language-string.two');    //Returns: "Goodbye!"
     ```
 
+[Back to the top](#leafalio-desktop)
+
 ## **`view`**-worker
 
 - `view.load(view: string)`
@@ -466,12 +534,13 @@ We will assume the following language file:
 
     Updates the page with all the details about the currently signed user. A dummy profile will be used if no profile is currently loaded.
 
+[Back to the top](#leafalio-desktop)
 
 # Communication channels
 
 With the use of [***`app`***`-worker`](#app-worker), multiple communication channels between the client- and server-side of the application have been set-up.
 
-## ProfileManager
+## Profile Manager
 
 *This communication channel is normally handled by the* [***`profile`***`-worker`](#profile-worker)*.*
 
@@ -568,6 +637,8 @@ With the use of [***`app`***`-worker`](#app-worker), multiple communication chan
         <- true
     ```
 
+[Back to the top](#leafalio-desktop)
+
 ## Local Data Store
 
 *This communication channel is normally handled by the* [***`store`***`-worker`](#store-worker)*.*
@@ -599,3 +670,5 @@ With the use of [***`app`***`-worker`](#app-worker), multiple communication chan
 
         <- undefined
     ```
+
+[Back to the top](#leafalio-desktop)

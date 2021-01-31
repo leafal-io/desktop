@@ -4,12 +4,6 @@
     }
 </view-properties>
 
-<view-head>
-    <style>
-        
-    </style>
-</view-head>
-
 <view-body>
     <script>
         (async function() {
@@ -22,7 +16,7 @@
 <view-content>
     <div class="container">
         <h1>This is my profile</h1>
-        <p class="username"></p>
+        <p class="username" profile-loaded></p>
         <br><br>
         <p load-lang="en">English</p>
         <br><br>
@@ -30,6 +24,6 @@
         <br><br>
         <p load-view="profile-selection">Choose Profile</p>
         <br><br>
-        <img data-profile="src:localAvatar" height="100">
+        <img data-profile="src:localAvatar" profile-loaded height="100">
     </div>
 </view-content>
