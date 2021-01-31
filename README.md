@@ -118,6 +118,32 @@ The application often uses HTML attributes to handle data and listen for user in
         <input data-lang="placeholder:form.identifier" placeholder="Username of E-mail address">
     ```
 
+- **`lang-prefix`**: Will put the given string in front of the result of `[data-lang]`.
+
+    The same example scenario as above will be used:
+    ```html
+        <el data-lang="the.path.0" lang-prefix="This is the result: "></el>
+    ```
+
+    Will result in:
+
+    ```html
+        <el data-lang="the.path.0" lang-prefix="This is the result: ">This is the result: This is string #1</el>
+    ```
+
+- **`lang-suffix`**: Will put the given string after the result of `[data-lang]`.
+
+    The same example scenario as above will be used:
+    ```html
+        <el data-lang="the.path.0" lang-suffix=", Awesome!"></el>
+    ```
+
+    Will result in:
+
+    ```html
+        <el data-lang="the.path.0" lang-suffix=", Awesome!">This is string #1, Awesome!</el>
+    ```
+
 [Back to the top](#leafalio-desktop)
 
 ## Profile attributes
@@ -217,6 +243,8 @@ Each view can consist of the following root-elements:
 ## view-properties
 If present, inside the `<view-properties>` element a `{ JSON-object }` is expected. The following keys can be defined:
 - `"title"`: Defaults to: `"defaultTitle"`. Expects a path to a language string. Will update the `data-lang` property of the `html > head > title` element.
+- `"titlePrefix"`: Defaults to `"leafal.io desktop - "`. In here, a plain string can be given that will be put in front of the title, obtained from a lang file. If `false`, prefix will be removed. This mechanic makes use of the HTML attribute `lang-prefix`, documentated above.
+- `"titleSuffix"`: Defaults to `false`. In here, a plain string can be given that will be put after the title, obtained from a lang file. If `false`, suffix will be removed. This mechanic makes use of the HTML attribute `lang-suffix`, documentated above.
 - `"fillWindow"`: Defaults to `false`. In case a positive property such as `true` is present, the top-navigation bar and bottom status-bar will be hidden.
 
 ### Example using view-properties
@@ -225,6 +253,8 @@ If present, inside the `<view-properties>` element a `{ JSON-object }` is expect
     <view-properties>
         {
             "title": "language.path.to.title",
+            "titlePrefix": "Pre-title | ",
+            "titleSuffix": " | after title",
             "fillwindow": false
         }
     </view-properties>
@@ -488,21 +518,25 @@ We will assume the following language file:
 
     Returns the name of the currently loaded profile, if any.
 
-- `profile.list()`
+- **async** `profile.list()`
 
     Returns a list of locally stored profiles in the form of an array.
 
-- `profile.find(username: string)`
+- **async** `profile.find(username: string)`
 
     Find a locally stored profile by it's username.
 
-- `profile.create(username: string)`
+- **async** `profile.create(username: string)`
 
     Create a locally stored profile by it's username.
 
-- `profile.exists(username: string)`
+- **async** `profile.exists(username: string)`
 
     Check if a locally stored profile exists by it's username.
+
+- **async** `profile.updateOnlineStatus()`
+
+    Update the online status of the currently loaded profile.
 
 - **async** `profile.delete(username: string)`
 
@@ -567,6 +601,14 @@ With the use of [***`app`***`-worker`](#app-worker), multiple communication chan
         > await app.invoke('profile.exists', 'leafal.io');
 
         <- true
+    ```
+
+- `profile.updateOnlineStatus`: Update the online status of the currently loaded profile.
+    
+    ```javascript
+        > await app.invoke('profile.updateOnlineStatus');
+
+        <- true     //false indicates an error with the request to the leafal.io API. null indicates no profile has been loaded.
     ```
 
 - `profile.create`: Create a locally stored profile by it's username.

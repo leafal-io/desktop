@@ -21,6 +21,8 @@ const LeafalAPI = axios.create({
     }
 });
 
+console.log("Dependencies have been loaded.");
+
 //App class. Will be used to interface with the window containing the GUI.
 class App {
     window: BrowserWindow;
@@ -35,6 +37,7 @@ class App {
             minWidth: 500,
             minHeight: 650,
             backgroundColor: '#363636',
+            icon: this.root + '/static/img/leafal/logo.png',
             webPreferences: {
                 nodeIntegration: true           //This allows the inclustion of ipcRenderer in the client window.
             }
@@ -69,8 +72,13 @@ class App {
     toggleLoader() { this.send('loader', 'toggle'); }
 };
 
+console.log("Waiting for the electron application to initialize.");
+
+
 //Once the app is ready to launch a window, create a new App instance, load all local APIs and register all communicators.
 app.on('ready', async () => {
+    console.log("Launching application window and loading all APIs.");    
+
     const app = new App();
     const api = {
         profile: require('./api/profileManager'),
@@ -78,9 +86,13 @@ app.on('ready', async () => {
     }
 
     if (process.env.NODE_ENV == 'dev') {
+        console.log("Running in dev mode, forcibly updating all profile caches.");
         await api.profile.updateCaches(true);   //Update all profile caches in a dev environment. All files from build will be deleted and therefor profile images will go missing.
     }
 
+    console.log("Registering all communication channels.");
     communicator(app, api);
+
+    console.log("Dropping the loader and opening the application interface.");    
     app.loadFile('app.html');   //Load the default webpage.
 });

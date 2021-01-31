@@ -67,6 +67,7 @@ class Profile {
         } else if (!store.get('userprofiles').find((profile: any) => profile && profile.id === this.profile.id) && this.doUpdates) {
             //If updates are allowed, and the profile does not yet exist in the datastore, register it in the next index.
             store.set('userprofiles.' + store.get('userprofiles').length, this.profile);
+            console.log("Created profile for user with username \"" + this.profile.username + "\"");
         }
 
         //Update the profile cache upon loading. (function itself got a limiting factor of once per 2 minutes, unless the force parameter is set to true)
@@ -87,6 +88,7 @@ class Profile {
         } else {                            //If authentication is successful, update the token and update the profile.
             this.setToken(result.token);
             this.update();
+            console.log("Authenticated profile with username \"" + this.profile.username + "\"");
             return {
                 success: true,
                 token: result.token
@@ -100,6 +102,7 @@ class Profile {
         this.profile.signedin = false;      //Update the signedin indicator.
         this.profile.token = null;          //Remove the token from the profile.
         this.update();                      //Update the profile.
+        console.log("Signed out profile with username \"" + this.profile.username + "\"");
         return true;
     }
 
@@ -170,6 +173,7 @@ class Profile {
     //update the cached profile.
     async updateCache(force: boolean = false) {
         if (!this.doUpdates) return false;
+        if (force) console.log("Cache for profile \"" + this.profile.username + "\" will forcibly be updated");
         if (!force && Math.floor((new Date().getTime() - this.profile.updated) / 60000) < 2) {   //unless forced, check if at least two minutes have passed since the last update.
             return false;                                                                       //Two minutes have not yet passed, provide a negative response.
         } else {
@@ -202,19 +206,41 @@ class Profile {
                 this.profile.avatar = res.data.avatar;
                 this.profile.coin = res.data.coin;
 
-                this.update(); //Update the profile in the local datastore.    
+                this.update(); //Update the profile in the local datastore.
+                if (force) console.log("Cache for profile \"" + this.profile.username + "\" was forcibly updated");
                 return true;
             }
         }
+    }
 
-        
+    async updateOnlineStatus() {
+        var UserAPI = this.obtainAPI();
+        if (UserAPI) {
+            var res: any = (await UserAPI.post('users/me/status/index.php')).data;
+            if (res.success) {
+                console.log("Updated online status for user with username \"" + this.profile.username + "\".");
+            } else {
+                console.log("Failed to update online status for user with username \"" + this.profile.username + "\".");
+            }
+
+            return res;
+        } else {
+            console.log("Failed to update online status for user with username \"" + this.profile.username + "\". Profile not authenticated.");
+            return {
+                success: false,
+                error: 'not_signedin'
+            }
+        }
     }
 
     //Delete profile from local datastore.
     delete() {
         if (!this.doUpdates) return false;
         store.get('userprofiles').forEach((profile: ProfileTemplate, i: number) => {
-            if (profile && profile.id == this.profile.id) store.delete('userprofiles.' + i);
+            if (profile && profile.id == this.profile.id) {
+                store.delete('userprofiles.' + i);
+                console.log("Delete profile with username \"" + this.profile.username + "\"");
+            }
         });
     }
 }
@@ -222,6 +248,21 @@ class Profile {
 class ProfileManager {
     constructor() {
         if (!store.get('userprofiles')) store.set('userprofiles', []); //Make sure local datastore for userprofiles is ready.
+
+        //Online status update. (triggers every 2,5 minutes. Max by the API is 5 minutes.)
+        setInterval(async () => this.updateOnlineStatus, 150000)
+        this.updateOnlineStatus();
+    }
+
+    async updateOnlineStatus() {
+        var currentProfile: any = store.get('currentProfile');
+        if (currentProfile) {
+            var prof = this.find(currentProfile);
+            return (await prof.updateOnlineStatus()).success
+        } else {
+            console.log("Not updating any online status, no profile is loaded.");
+            return null;
+        }
     }
 
     //List all user profiles.
@@ -254,11 +295,13 @@ class ProfileManager {
     }
 
     async updateCaches(force: boolean = false) {
+        if (force) console.log("Forcibly updating all profile caches.");
         const profs = this.list();
         for (var i = 0; i < profs.length; i++) {
             await profs[i].updateCache(force);
         }
-        
+
+        if (force) console.log("Forcibly updated all profile caches.");        
         return true;
     }
 

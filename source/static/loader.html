@@ -27,10 +27,8 @@
                 h5 {
                     position: absolute;
                     bottom: 0;
-                    width: 100%;
-                    line-height: 60px;
-                    text-align: center;
                     display: none;
+                    margin: 25px;
                 }
         </style>
     </head>
@@ -39,17 +37,19 @@
         <script>
             setTimeout(function() {
                 document.querySelector('h5').style.display = 'block';
-                document.querySelector('title').innerText = 'leafal.io Desktop - Waiting for client backend';
+                document.querySelector('title').innerText = 'leafal.io desktop - Waiting for client backend';
                 
                 //When the backend takes longer to load than expected, update the window accordingly.
                 setInterval(function() {
                     var el = document.querySelector('h5 span');
                     if (el.innerText.length > 2) return el.innerText = '';
                     el.innerText += '.';
-                }, 300);
+                }, 350);
             }, 200);
 
-
+            setTimeout(function() {
+                document.querySelector('h5').innerHTML += '<br><br>It is taking longer than expected for the client backend to load. <br>Try restarting or reinstalling the application.'
+            }, 5000);
         </script>
     </body>
 </html>

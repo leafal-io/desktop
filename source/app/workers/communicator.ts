@@ -59,6 +59,10 @@ const components = [
             if (!profile) return false;
             return profile.updateCache(true);
         });
+
+        app.handle('profile.updateOnlineStatus', async (e:any) => {
+            return await api.profile.updateOnlineStatus()
+        });
     },
 
     //General datastore usage

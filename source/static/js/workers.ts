@@ -160,6 +160,12 @@ const lang = new class Lang {
             }
             
             var result = this.get(selector);
+            var prefix = el.getAttribute('lang-prefix');
+            var suffix = el.getAttribute('lang-suffix');
+
+            if (prefix) result = prefix + result;
+            if (suffix) result = result + suffix;
+
             if (!targetAttribute) {
                 el.innerText = result;
             } else {
@@ -208,6 +214,8 @@ const view = new class View {
             const parsed: any = document.createElement('parsed'); parsed.innerHTML = res;
             const viewProperties: any = Object.assign({
                 title: "defaultTitle",
+                titlePrefix: 'leafal.io desktop - ',
+                titleSuffix: false,
                 fillwindow: false
             }, (props => props ? JSON.parse(props.innerText) : {})(parsed.querySelector('view-properties')));
             
@@ -230,9 +238,23 @@ const view = new class View {
             });
         
             //Apply new view
-            if (el.title) el.title.setAttribute('data-lang', viewProperties.title);
+            if (el.title) {
+                el.title.setAttribute('data-lang', viewProperties.title);
+                
+                if (viewProperties.titlePrefix) {
+                    el.title.setAttribute('lang-prefix', viewProperties.titlePrefix);
+                } else {
+                    el.title.removeAttribute('lang-prefix');
+                }
+
+                if (viewProperties.titleSuffix) {
+                    el.title.setAttribute('lang-suffix', viewProperties.titleSuffix);
+                } else {
+                    el.title.removeAttribute('lang-suffix');
+                }
+            }
+
             if (el.content) el.content.innerHTML = el.newContent.innerHTML;
- 
             if (el.headElements) Array.from(el.headElements.children).forEach((el: any) => {
                 el.setAttribute('current-view-only', '');
                 document.head.appendChild(el);
@@ -282,20 +304,24 @@ const profile = new class Profile {
         return this.currentProfile;
     }
     
-    list() {
-        return app.invoke('profile.list');
+    async list() {
+        return await app.invoke('profile.list');
     }
 
-    find(username: string) {
-        return app.invoke('profile.find', username);
+    async find(username: string) {
+        return await app.invoke('profile.find', username);
     }
 
-    create(username: string) {
-        return app.invoke('profile.create', username);
+    async create(username: string) {
+        return await app.invoke('profile.create', username);
     }
 
-    exists(username: string) {
-        return app.invoke('profile.exists', username);
+    async exists(username: string) {
+        return await app.invoke('profile.exists', username);
+    }
+
+    async updateOnlineStatus() {
+        return await app.invoke('profile.updateOnlineStatus');
     }
 
     async delete(username: string) {
@@ -338,6 +364,7 @@ const profile = new class Profile {
             this.currentProfile = username;
             await store.set('currentProfile', username);
             document.body.setAttribute('profile-loaded', username);
+            await this.updateOnlineStatus();
             return true;
         } else {
             return false;
