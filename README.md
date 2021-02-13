@@ -2,7 +2,7 @@
 The official desktop application for leafal.io, used to access the store, view profiles, download and play games.
 
 **WARNING:**
-This application is early in development. Don't expect much, please report issues within our discord server (Morgan: owner and Kearfy: main dev of this repo): https://discord.gg/RucfrYaWnX
+This application is early in development. Don't expect much, please report issues within our Discord server (Morgan: owner and Kearfy: main developer of this repository): https://discord.gg/RucfrYaWnX
 
 # Table of contents
 - [Running Development Builds](#running-development-builds)
