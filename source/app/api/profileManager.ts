@@ -175,18 +175,16 @@ class Profile {
         if (!this.doUpdates) return false;
         if (force) console.log("Cache for profile \"" + this.profile.username + "\" will forcibly be updated");
         if (!force && Math.floor((new Date().getTime() - this.profile.updated) / 60000) < 2) {   //unless forced, check if at least two minutes have passed since the last update.
-            return false;                                                                       //Two minutes have not yet passed, provide a negative response.
+            return false;                                                                        //Two minutes have not yet passed, provide a negative response.
         } else {
-            const res = await LeafalAPI.post('users/index.php', qs.stringify({                  //obtain the profile, independent of the authentication status.
-                username: this.profile.username
-            }));
+            const res = await LeafalAPI.get(`users/index.php?query=username:${this.profile.username}`);     //obtain the profile, independent of the authentication status.);
             
-            if (res.data.success === false) {                                                   //check if errors have occured.
+            if (res.data.success === false) {                                                               //check if errors have occured.
                 return false;
             } else {
-                if (force || res.data.avatar !== this.profile.avatar) {                                  //If online profile picture has updated, cache local picture.
+                if (force || res.data.avatar !== this.profile.avatar) {                                     //If online profile picture has updated, cache local picture.
                     await axios({
-                        url: res.data.avatar,
+                        url: `https://www.leafal.io${res.data.avatar}`,
                         method: 'get',
                         responseType: 'stream'
                     }).then(imgRes => {
@@ -287,8 +285,7 @@ class ProfileManager {
 
     //Obtain profile from online API, independent of the profile being in existance in local datastore.
     async obtain(input: string | number, isId: boolean = false) {
-        var data = isId ? {id:input} : {username:input};                                //Obtain by id if isId == true.
-        var res: any = await LeafalAPI.post('users/index.php', qs.stringify(data));     //Obtain from API.
+        var res: any = await LeafalAPI.get(`users/index.php?query=${isId ? 'id' : 'username'}:${input}`);     //Obtain from API.
         return Object.assign({
             success: true
         }, res.data);
