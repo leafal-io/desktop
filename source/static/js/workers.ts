@@ -214,7 +214,7 @@ const view = new class View {
             const parsed: any = document.createElement('parsed'); parsed.innerHTML = res;
             const viewProperties: any = Object.assign({
                 title: "defaultTitle",
-                titlePrefix: 'leafal.io desktop - ',
+                titlePrefix: 'leafal.io Desktop - ',
                 titleSuffix: false,
                 fillwindow: false
             }, (props => props ? JSON.parse(props.innerText) : {})(parsed.querySelector('view-properties')));
